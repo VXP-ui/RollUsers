@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Picker By kfu</title>
+  <title>User Roller</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
   <style>
     * {
@@ -40,30 +40,13 @@
       position: relative;
     }
     h1 {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 600;
-      background: linear-gradient(90deg, #ff7f50, #ff6347, #ff4500, #ff1493);
+      background: linear-gradient(90deg, #38a169, #3182ce);
       background-clip: text;
       color: transparent;
       margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      animation: titleAnimation 3s ease-in-out infinite alternate, glow 1.5s ease-in-out infinite alternate;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.6);
     }
-    @keyframes titleAnimation {
-      0% { transform: scale(1) rotate(0deg); }
-      50% { transform: scale(1.1) rotate(5deg); }
-      100% { transform: scale(1) rotate(-5deg); }
-    }
-    @keyframes glow {
-      0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.6); }
-      100% { text-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.8); }
-    }
-    h1:hover {
-      animation: titleAnimation 0.5s ease-in-out infinite alternate, glow 0.5s ease-in-out infinite alternate;
-    }
-
     input {
       width: 100%;
       padding: 12px;
@@ -181,7 +164,7 @@
 </head>
 <body>
   <div class="container">
-    <h1 id="pageTitle">User Picker</h1>
+    <h1>User Roller</h1>
     <input type="text" id="userInput" placeholder="Enter user name" autofocus>
     <div class="button-group">
       <button onclick="addUser()">Add User</button>
@@ -277,3 +260,7 @@
         document.getElementById('result').innerText = '';
         showNotification('User list cleared!');
       }
+    }
+  </script>
+</body>
+</html>
