@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Roller</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s ease;
+      background: linear-gradient(135deg, #2d3748, #1a202c, #4a5568, #2b2f3d);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .container {
+      background: rgba(31, 41, 55, 0.8); /* Semi-transparent background */
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #38a169, #3182ce);
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #2d3748;
+      color: #e2e8f0;
+      font-size: 1rem;
+      outline: none;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    input:focus {
+      background-color: #4a5568;
+      transform: scale(1.05);
+    }
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: #38a169;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    }
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    #userList {
+      margin-top: 20px;
+      background: #2d3748;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    #userList div {
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: #edf2f7;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.25rem;
+      color: #38a169;
+      font-weight: 600;
+      transition: opacity 0.3s ease;
+    }
+    .credits {
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      text-align: center;
+    }
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #38a169;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .notification {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #38a169;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      z-index: 1000;
+    }
+    .notification.error {
+      background-color: #e53e3e;
+    }
+    .notification.show {
+      opacity: 1;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+      .container {
+        padding: 20px;
+      }
+      button {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>User Roller</h1>
+    <input type="text" id="userInput" placeholder="Enter user name" autofocus>
+    <div class="button-group">
+      <button onclick="addUser()">Add User</button>
+      <button onclick="rollUser()">Roll User</button>
+      <button onclick="clearUsers()">Clear</button>
+    </div>
+    <input type="number" id="rollCount" placeholder="How many to roll?" min="1" max="10">
+    <div id="userList"></div>
+    <div id="result"></div>
+    <div class="credits">
+      Made By kfu (virtue.fu on discord)
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <script>
+    let users = [];
+
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.classList.add('show');
+      if (isError) {
+        notification.classList.add('error');
+      }
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    function addUser() {
+      const userInput = document.getElementById('userInput');
+      const userName = userInput.value.trim();
+      if (userName === '') {
+        showNotification('Username cannot be empty!', true);
+        return;
+      }
+      if (users.includes(userName)) {
+        showNotification('This username is already added!', true);
+        return;
+      }
+      users.push(userName);
+      userInput.value = '';
+      displayUsers();
+      showNotification(`User "${userName}" added successfully!`);
+      userInput.focus(); // Focus input after adding user
+    }
+
+    function displayUsers() {
+      const userList = document.getElementById('userList');
+      if (users.length === 0) {
+        userList.innerHTML = '<p>No users added yet.</p>';
+      } else {
+        userList.innerHTML = '<h3>Users:</h3>' + users.map(user => `<div>${user}</div>`).join('');
+      }
+      const remainingUsers = users.length;
+      const rollCountInput = document.getElementById('rollCount');
+      rollCountInput.setAttribute('max', remainingUsers); // Adjust max number to available users
+    }
+
+    function rollUser() {
+      const rollCount = parseInt(document.getElementById('rollCount').value);
+      const resultDiv = document.getElementById('result');
+      if (isNaN(rollCount) || rollCount < 1 || rollCount > users.length) {
+        showNotification('Please enter a valid number of users to roll!', true);
+        return;
+      }
+      if (users.length > 0) {
+        resultDiv.innerHTML = 'Rolling...';
+        resultDiv.innerHTML += `<div class="loading-spinner"></div>`; // Loading spinner
+        setTimeout(() => {
+          const selectedUsers = [];
+          for (let i = 0; i < rollCount; i++) {
+            const randomIndex = Math.floor(Math.random() * users.length);
+            selectedUsers.push(users[randomIndex]);
+          }
+          resultDiv.innerHTML = `Selected Users: ${selectedUsers.join(', ')}`;
+          showNotification(`Successfully rolled ${rollCount} user(s)!`);
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of results
+        }, 2000);
+      } else {
+        resultDiv.innerText = 'No users to roll.';
+        showNotification('No users available to roll.', true);
+      }
+      document.getElementById('rollCount').value = ''; // Clear roll count input
+    }
+
+    function clearUsers() {
+      if (confirm("Are you sure you want to clear all users?")) {
+        users = [];
+        displayUsers();
+        document.getElementById('result').innerText = '';
+        showNotification('User list cleared!');
+      }
+    }
+  </script>
+</body>
+</html>
